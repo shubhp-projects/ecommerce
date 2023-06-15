@@ -29,16 +29,17 @@ public class CategoryService {
         return categoryRepo.findAll().stream().map(this::convertEntityToDto).collect(Collectors.toList());
     }
 
-    public void editCategory(CategoryDto updateCategoryDto) {
+    public CategoryDto editCategory(CategoryDto updateCategoryDto) {
         Category category = categoryRepo.findById(updateCategoryDto.getId()).orElseThrow(() -> new CategoryNotExistsException("Category does not exists!"));
         category.setCategoryName(updateCategoryDto.getCategoryName());
         category.setDescription(updateCategoryDto.getDescription());
         category.setImageUrl(updateCategoryDto.getImageUrl());
         categoryRepo.save(category);
+        return convertEntityToDto(category);
     }
 
-    public void deleteCategory(CategoryDto categoryDto) {
-        Category category = categoryRepo.findById(categoryDto.getId()).orElseThrow(() -> new CategoryNotExistsException("Category does not exists!"));
+    public void deleteCategory(Integer categoryId) {
+        Category category = categoryRepo.findById(categoryId).orElseThrow(() -> new CategoryNotExistsException("Category does not exists!"));
         categoryRepo.delete(category);
     }
 

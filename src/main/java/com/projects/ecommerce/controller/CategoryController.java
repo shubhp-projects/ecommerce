@@ -2,6 +2,7 @@ package com.projects.ecommerce.controller;
 
 import com.projects.ecommerce.common.ApiResponse;
 import com.projects.ecommerce.dto.CategoryDto;
+import com.projects.ecommerce.exceptions.CategoryNotExistsException;
 import com.projects.ecommerce.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -33,14 +34,17 @@ public class CategoryController {
     }
 
     @PostMapping("/update")
-    public ResponseEntity<ApiResponse> updateCategory(@RequestBody CategoryDto categoryDto) {
-        categoryService.editCategory(categoryDto);
-        return new ResponseEntity<>(new ApiResponse(true, "Category has been updated successfully!"), HttpStatus.OK);
+    public void updateCategory(@RequestBody CategoryDto categoryDto) throws CategoryNotExistsException {
+        try {
+            ResponseEntity.ok(categoryService.editCategory(categoryDto));
+        } catch (ResponseStatusException responseStatusException) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
     }
 
-    @DeleteMapping("/delete")
-    public ResponseEntity<ApiResponse> deleteCategory(@RequestBody CategoryDto categoryDto) {
-        categoryService.deleteCategory(categoryDto);
-        return new ResponseEntity<>(new ApiResponse(true, "Item has been removed!"), HttpStatus.OK);
+    @DeleteMapping("/delete/{categoryId}")
+    public ResponseEntity<ApiResponse> deleteCategory(@PathVariable("categoryId") Integer categoryId) {
+        categoryService.deleteCategory(categoryId);
+        return new ResponseEntity<>(new ApiResponse(true, "Category has been removed!"), HttpStatus.OK);
     }
 }
