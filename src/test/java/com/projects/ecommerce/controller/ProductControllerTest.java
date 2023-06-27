@@ -23,6 +23,8 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 
 class ProductControllerTest {
 
@@ -71,7 +73,7 @@ class ProductControllerTest {
         ReflectionTestUtils.setField(productController, "categoryRepo", categoryRepo);
         List<Category> categoryList = createDummyCategoryData();
         List<ProductDto> productDtoList = createDummyProductDtoData();
-        Mockito.when(categoryRepo.findById(productDtoList.get(0).getCategoryId())).thenReturn(Optional.of(categoryList.get(0)));
+        when(categoryRepo.findById(productDtoList.get(0).getCategoryId())).thenReturn(Optional.of(categoryList.get(0)));
         productController.createProduct(productDtoList.get(0));
         assertEquals(1, productDtoList.get(0).getId());
     }
@@ -82,7 +84,7 @@ class ProductControllerTest {
         ProductController productController = new ProductController();
         ReflectionTestUtils.setField(productController, "productService", productService);
         List<ProductDto> productDtoList = createDummyProductDtoData();
-        Mockito.when(productService.getAllProducts()).thenReturn(productDtoList);
+        when(productService.getAllProducts()).thenReturn(productDtoList);
         ResponseEntity<List<ProductDto>> response = productController.getProducts();
         assertNotNull(response);
     }
@@ -93,11 +95,9 @@ class ProductControllerTest {
         ProductController productController = new ProductController();
         ReflectionTestUtils.setField(productController, "productService", productService);
         List<ProductDto> productDtoList = createDummyProductDtoData();
-        Mockito.when(productService.updateProduct(productDtoList.get(0))).thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND));
+        when(productService.updateProduct(productDtoList.get(0))).thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND));
         ProductDto productDto = productDtoList.get(0);
-        ResponseStatusException thrown = Assertions.assertThrows(ResponseStatusException.class, () -> {
-            productController.updateProduct(productDto);
-        });
+        ResponseStatusException thrown = Assertions.assertThrows(ResponseStatusException.class, () -> productController.updateProduct(productDto));
         assertEquals(HttpStatus.NOT_FOUND, thrown.getStatus());
     }
 
@@ -107,7 +107,7 @@ class ProductControllerTest {
         ProductController productController = new ProductController();
         ReflectionTestUtils.setField(productController, "productService", productService);
         List<ProductDto> productDtoList = createDummyProductDtoData();
-        Mockito.doNothing().when(productService).deleteProduct(productDtoList.get(0).getId());
+        doNothing().when(productService).deleteProduct(productDtoList.get(0).getId());
         ResponseEntity<ApiResponse> response = productController.deleteProduct(productDtoList.get(0).getId());
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }

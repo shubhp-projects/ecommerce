@@ -20,6 +20,8 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 
 class CategoryControllerTest {
 
@@ -48,16 +50,14 @@ class CategoryControllerTest {
     }
 
     @Test
-    void createCategory() {
+    void createCategoryTest() {
         CategoryService categoryService = Mockito.mock(CategoryService.class);
         CategoryController categoryController = new CategoryController();
         ReflectionTestUtils.setField(categoryController, "categoryService", categoryService);
         List<CategoryDto> categoryDtoList = createDummyCategoryDtoData();
-        Mockito.when(categoryService.createCategory(categoryDtoList.get(0))).thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND));
+        when(categoryService.createCategory(categoryDtoList.get(0))).thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND));
         CategoryDto categoryDto = categoryDtoList.get(0);
-        ResponseStatusException thrown = Assertions.assertThrows(ResponseStatusException.class, () -> {
-            categoryController.createCategory(categoryDto);
-        });
+        ResponseStatusException thrown = Assertions.assertThrows(ResponseStatusException.class, () -> categoryController.createCategory(categoryDto));
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, thrown.getStatus());
     }
 
@@ -67,32 +67,30 @@ class CategoryControllerTest {
         CategoryController categoryController = new CategoryController();
         ReflectionTestUtils.setField(categoryController, "categoryService", categoryService);
         List<CategoryDto> categoryDtoList = createDummyCategoryDtoData();
-        Mockito.when(categoryService.listCategory()).thenReturn(categoryDtoList);
+        when(categoryService.listCategory()).thenReturn(categoryDtoList);
         List<CategoryDto> response = categoryController.listCategory();
         assertNotNull(response);
     }
 
     @Test
-    void updateCategory() {
+    void updateCategoryTest() {
         CategoryService categoryService = Mockito.mock(CategoryService.class);
         CategoryController categoryController = new CategoryController();
         ReflectionTestUtils.setField(categoryController, "categoryService", categoryService);
         List<CategoryDto> categoryDtoList = createDummyCategoryDtoData();
-        Mockito.when(categoryService.editCategory(categoryDtoList.get(0))).thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND));
+        when(categoryService.editCategory(categoryDtoList.get(0))).thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND));
         CategoryDto categoryDto = categoryDtoList.get(0);
-        ResponseStatusException thrown = Assertions.assertThrows(ResponseStatusException.class, () -> {
-            categoryController.updateCategory(categoryDto);
-        });
+        ResponseStatusException thrown = Assertions.assertThrows(ResponseStatusException.class, () -> categoryController.updateCategory(categoryDto));
         assertEquals(HttpStatus.NOT_FOUND, thrown.getStatus());
     }
 
     @Test
-    void deleteCategory(){
+    void deleteCategoryTest(){
         CategoryService categoryService = Mockito.mock(CategoryService.class);
         CategoryController categoryController = new CategoryController();
         ReflectionTestUtils.setField(categoryController, "categoryService", categoryService);
         List<CategoryDto> categoryDtoList = createDummyCategoryDtoData();
-        Mockito.doNothing().when(categoryService).deleteCategory(categoryDtoList.get(0).getId());
+        doNothing().when(categoryService).deleteCategory(categoryDtoList.get(0).getId());
         ResponseEntity<ApiResponse> response = categoryController.deleteCategory(categoryDtoList.get(0).getId());
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }

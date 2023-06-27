@@ -34,9 +34,9 @@ public class CategoryController {
     }
 
     @PostMapping("/update")
-    public void updateCategory(@RequestBody CategoryDto categoryDto) throws CategoryNotExistsException {
+    public ResponseEntity<CategoryDto> updateCategory(@RequestBody CategoryDto categoryDto) throws CategoryNotExistsException {
         try {
-            ResponseEntity.ok(categoryService.editCategory(categoryDto));
+            return ResponseEntity.ok(categoryService.editCategory(categoryDto));
         } catch (ResponseStatusException responseStatusException) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }

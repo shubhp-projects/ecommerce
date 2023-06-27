@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.when;
 
 class ProductServiceTest {
 
@@ -58,52 +59,52 @@ class ProductServiceTest {
     }
 
     @Test
-    void createProduct() {
+    void createProductTest() {
         ProductRepo productRepo = Mockito.mock(ProductRepo.class);
         ModelMapper modelMapper = Mockito.mock(ModelMapper.class);
         ProductService productService = new ProductService();
         setFields(productRepo, modelMapper, productService);
         List<Product> productList = createDummyProductData();
         List<ProductDto> productDtoList = createDummyProductDtoData();
-        Mockito.when(productRepo.save(productList.get(0))).thenReturn(productList.get(0));
+        when(productRepo.save(productList.get(0))).thenReturn(productList.get(0));
         productService.createProduct(productDtoList.get(0));
         assertNotNull(productList.get(0));
     }
 
     @Test
-    void getAllProducts() {
+    void getAllProductsTest() {
         ProductRepo productRepo = Mockito.mock(ProductRepo.class);
         ModelMapper modelMapper = Mockito.mock(ModelMapper.class);
         ProductService productService = new ProductService();
         setFields(productRepo, modelMapper, productService);
         List<Product> productList = createDummyProductData();
-        Mockito.when(productRepo.findAll()).thenReturn(productList);
+        when(productRepo.findAll()).thenReturn(productList);
         assertNotNull(productService.getAllProducts());
     }
 
     @Test
-    void updateProduct() {
+    void updateProductTest() {
         ProductRepo productRepo = Mockito.mock(ProductRepo.class);
         ModelMapper modelMapper = Mockito.mock(ModelMapper.class);
         ProductService productService = new ProductService();
         setFields(productRepo, modelMapper, productService);
         List<Product> productList = createDummyProductData();
         List<ProductDto> productDtoList = createDummyProductDtoData();
-        Mockito.when(productRepo.findById(productList.get(0).getId())).thenReturn(Optional.of(productList.get(0)));
-        Mockito.when(productRepo.save(productList.get(0))).thenReturn(productList.get(0));
+        when(productRepo.findById(productList.get(0).getId())).thenReturn(Optional.of(productList.get(0)));
+        when(productRepo.save(productList.get(0))).thenReturn(productList.get(0));
         productService.updateProduct(productDtoList.get(0));
         assertNotNull(productList.get(0));
     }
 
     @Test
-    void deleteProduct() {
+    void deleteProductTest() {
         ProductRepo productRepo = Mockito.mock(ProductRepo.class);
         ModelMapper modelMapper = Mockito.mock(ModelMapper.class);
         ProductService productService = new ProductService();
         setFields(productRepo, modelMapper, productService);
         List<Product> productList = createDummyProductData();
         List<ProductDto> productDtoList = createDummyProductDtoData();
-        Mockito.when(productRepo.findById(productList.get(0).getId())).thenReturn(Optional.ofNullable(productList.get(0)));
+        when(productRepo.findById(productList.get(0).getId())).thenReturn(Optional.ofNullable(productList.get(0)));
         productService.deleteProduct(productDtoList.get(0).getId());
         assertNotNull(productList.get(0));
     }
