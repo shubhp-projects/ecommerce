@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.when;
 
 class CategoryServiceTest {
 
@@ -44,26 +45,26 @@ class CategoryServiceTest {
     }
 
     @Test
-    void createCategory() {
+    void createCategoryTest() {
         CategoryRepo categoryRepo = Mockito.mock(CategoryRepo.class);
         ModelMapper modelMapper = Mockito.mock(ModelMapper.class);
         CategoryService categoryService = new CategoryService();
         setFields(categoryRepo, modelMapper, categoryService);
         List<Category> categoryList = createDummyCategoryData();
         List<CategoryDto> categoryDtoList = createDummyCategoryDtoData();
-        Mockito.when(categoryRepo.save(categoryList.get(0))).thenReturn(categoryList.get(0));
+        when(categoryRepo.save(categoryList.get(0))).thenReturn(categoryList.get(0));
         categoryService.createCategory(categoryDtoList.get(0));
         assertNotNull(categoryList.get(0).getCategoryName());
     }
 
     @Test
-    void listCategory() {
+    void listCategoryTest() {
         CategoryRepo categoryRepo = Mockito.mock(CategoryRepo.class);
         ModelMapper modelMapper = Mockito.mock(ModelMapper.class);
         CategoryService categoryService = new CategoryService();
         setFields(categoryRepo, modelMapper, categoryService);
         List<Category> categoryList = createDummyCategoryData();
-        Mockito.when(categoryRepo.findAll()).thenReturn(categoryList);
+        when(categoryRepo.findAll()).thenReturn(categoryList);
         assertNotNull(categoryService.listCategory());
     }
 
@@ -75,21 +76,21 @@ class CategoryServiceTest {
         setFields(categoryRepo, modelMapper, categoryService);
         List<Category> categoryList = createDummyCategoryData();
         List<CategoryDto> categoryDtoList = createDummyCategoryDtoData();
-        Mockito.when(categoryRepo.findById(categoryList.get(0).getId())).thenReturn(Optional.of(categoryList.get(0)));
-        Mockito.when(categoryRepo.save(categoryList.get(0))).thenReturn(categoryList.get(0));
+        when(categoryRepo.findById(categoryList.get(0).getId())).thenReturn(Optional.of(categoryList.get(0)));
+        when(categoryRepo.save(categoryList.get(0))).thenReturn(categoryList.get(0));
         categoryService.editCategory(categoryDtoList.get(0));
         assertNotNull(categoryList.get(0));
     }
 
     @Test
-    void deleteCategory() {
+    void deleteCategoryTest() {
         CategoryRepo categoryRepo = Mockito.mock(CategoryRepo.class);
         ModelMapper modelMapper = Mockito.mock(ModelMapper.class);
         CategoryService categoryService = new CategoryService();
         setFields(categoryRepo, modelMapper, categoryService);
         List<Category> categoryList = createDummyCategoryData();
         List<CategoryDto> categoryDtoList = createDummyCategoryDtoData();
-        Mockito.when(categoryRepo.findById(categoryList.get(0).getId())).thenReturn(Optional.of(categoryList.get(0)));
+        when(categoryRepo.findById(categoryList.get(0).getId())).thenReturn(Optional.of(categoryList.get(0)));
         categoryService.deleteCategory(categoryDtoList.get(0).getId());
         assertNotNull(categoryList.get(0));
     }
