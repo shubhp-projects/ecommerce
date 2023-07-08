@@ -1,6 +1,7 @@
 package com.projects.ecommerce.service;
 
 import com.projects.ecommerce.dto.ProductDto;
+import com.projects.ecommerce.exceptions.ProductNotExistsException;
 import com.projects.ecommerce.model.Category;
 import com.projects.ecommerce.model.Product;
 import com.projects.ecommerce.repository.ProductRepo;
@@ -13,10 +14,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 class ProductServiceTest {
+
+    private static void setFields(ProductRepo productRepo, ModelMapper modelMapper, ProductService productService) {
+        ReflectionTestUtils.setField(productService, "productRepo", productRepo);
+        ReflectionTestUtils.setField(productService, "modelMapper", modelMapper);
+    }
 
     public List<Category> createDummyCategoryData() {
         List<Category> categoryList = new ArrayList<>();
@@ -51,11 +57,6 @@ class ProductServiceTest {
         productDto.setImageUrl("img/url");
         productDtoList.add(productDto);
         return productDtoList;
-    }
-
-    private static void setFields(ProductRepo productRepo, ModelMapper modelMapper, ProductService productService) {
-        ReflectionTestUtils.setField(productService, "productRepo", productRepo);
-        ReflectionTestUtils.setField(productService, "modelMapper", modelMapper);
     }
 
     @Test
@@ -107,5 +108,30 @@ class ProductServiceTest {
         when(productRepo.findById(productList.get(0).getId())).thenReturn(Optional.ofNullable(productList.get(0)));
         productService.deleteProduct(productDtoList.get(0).getId());
         assertNotNull(productList.get(0));
+    }
+
+    @Test
+    void findByIdTest() {
+        ProductRepo productRepo = Mockito.mock(ProductRepo.class);
+        ModelMapper modelMapper = Mockito.mock(ModelMapper.class);
+        ProductService productService = new ProductService();
+        setFields(productRepo, modelMapper, productService);
+        List<Product> productList = createDummyProductData();
+        when(productRepo.findById(productList.get(0).getId())).thenReturn(Optional.of(productList.get(0)));
+        productService.findById(productList.get(0).getId());
+        assertNotNull(productList.get(0));
+    }
+
+    @Test
+    void findByIdWhenProductIsNotPresentTest() {
+        ProductRepo productRepo = Mockito.mock(ProductRepo.class);
+        ModelMapper modelMapper = Mockito.mock(ModelMapper.class);
+        ProductService productService = new ProductService();
+        setFields(productRepo, modelMapper, productService);
+        List<Product> productList = createDummyProductData();
+        Integer productId = productList.get(0).getId();
+        when(productRepo.findById(productId)).thenReturn(Optional.empty());
+        ProductNotExistsException thrown = assertThrows(ProductNotExistsException.class, () -> productService.findById(productId));
+        assertEquals("Product ID is invalid: 1", thrown.getMessage());
     }
 }

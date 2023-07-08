@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProductService {
@@ -57,5 +58,13 @@ public class ProductService {
 
     public Product convertDtoToEntity(ProductDto result) {
         return modelMapper.map(result, Product.class);
+    }
+
+    public Product findById(Integer productId) throws ProductNotExistsException {
+        Optional<Product> optionalProduct = productRepo.findById(productId);
+        if (!optionalProduct.isPresent()){
+            throw new ProductNotExistsException("Product ID is invalid: " + productId);
+        }
+        return optionalProduct.get();
     }
 }
