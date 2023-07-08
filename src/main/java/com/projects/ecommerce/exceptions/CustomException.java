@@ -1,8 +1,8 @@
 package com.projects.ecommerce.exceptions;
 
-public class CustomException extends IllegalArgumentException{
+public class CustomException extends IllegalArgumentException {
 
-    public CustomException(String msg){
+    public CustomException(String msg) {
         super(msg);
     }
 }
